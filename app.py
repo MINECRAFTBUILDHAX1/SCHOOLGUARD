@@ -12,15 +12,16 @@ def home():
 
 @app.route('/login', methods=['POST'])
 def login():
-    # Get the username and password from the form
     username = request.form['username']
     password = request.form['password']
-    
-    # Check if the username and password match
+    print(f"Username: {username}, Password: {password}")  # Debugging
     if username == USERNAME and password == PASSWORD:
-        return redirect(url_for('dashboard'))  # Redirect to dashboard if successful
+        print("Login successful!")
+        return redirect(url_for('dashboard'))
     else:
+        print("Login failed!")
         return "Login Failed! Incorrect username or password."
+
 
 @app.route('/dashboard')
 def dashboard():
