@@ -97,7 +97,7 @@ footer p {
 </head>
 <body>
     <div id="landing-page">
-        <h1>Signature Capture App</h1>
+        <h1>Polish School Ealing</h1>
         <button class="button" onclick="showNameSelection()">Select Name</button>
         <button class="button" onclick="generatePDF()">Generate PDF</button>
     </div>
@@ -363,6 +363,28 @@ footer p {
 
         initSignature();
     </script>
+ <script>
+  // Example function to add a signing event to the calendar
+  function addSigningToCalendar(artistName, signingDate) {
+    const calendar = document.getElementById('calendar');
+    
+    // Create a new div to represent this signing
+    const signingDiv = document.createElement('div');
+    
+    // Set the event details in the div (can style it as you like)
+    signingDiv.innerHTML = `
+      <p><strong>${artistName}</strong> signed on <span>${signingDate}</span></p>
+      <a href="past_signings.html?artist=${encodeURIComponent(artistName)}&date=${encodeURIComponent(signingDate)}">View Details</a>
+    `;
+    
+    // Append this signing to the calendar div
+    calendar.appendChild(signingDiv);
+  }
+  
+  // Call this function whenever you want to add a new signing
+  // Example: addSigningToCalendar('Artist Name', '2025-04-01');
+</script>
+
  <footer>
   <p>2025 <a href="https://www.markmajcherczykolczak.com" target="_blank">Majcherczyk Digital</a>. All rights reserved.</p>
 </footer>
