@@ -1,6 +1,6 @@
 <script>
   const logins = {
-    "schoolA": { password: "1234", redirect: "schoolA.html" },
+    "schoolguardfinal": { password: "1234", redirect: "schoolguardfinal.html" },
     "schoolB": { password: "abcd", redirect: "schoolB.html" },
     // add more schools as needed
   };
