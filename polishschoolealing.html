@@ -93,9 +93,10 @@ footer p {
   opacity: 0.8;
 }
      #link-button-container {
-    text-align: center; /* Center the button */
-    margin-bottom: 20px; /* Space above the footer */
+    text-align: center;  /* Center the button */
+    margin-bottom: 20px;  /* Add space between button and footer */
 }
+
 
     </style>
 </head>
@@ -310,101 +311,80 @@ footer p {
         }
 
         function signIn() {
-    const timestamp = new Date().toLocaleString();
-    const entry = { name: selectedName, time: timestamp, type: 'Sign In' };
-    signatures.signIn.push(entry);
-    saveToLocalStorage(entry);
-    alert(`${selectedName} signed in at ${timestamp}`);
-      document.getElementById('signature-page').classList.add('hidden');
-    document.getElementById('landing-page').classList.remove('hidden');
-}
+            if (!selectedName) return;
+            const signatureCanvas = document.getElementById('signatureCanvas');
+            const signatureDataUrl = signatureCanvas.toDataURL();
+            signatures.signIn.push({ name: selectedName, signature: signatureDataUrl, time: currentTime });
+            clearSignature();
+            goToLandingPage(); // Automatically return to landing page
+        }
 
-function signOut() {
-    const timestamp = new Date().toLocaleString();
-    const entry = { name: selectedName, time: timestamp, type: 'Sign Out' };
-    signatures.signOut.push(entry);
-    saveToLocalStorage(entry);
-    alert(`${selectedName} signed out at ${timestamp}`);
-     document.getElementById('signature-page').classList.add('hidden');
-    document.getElementById('landing-page').classList.remove('hidden');
-}
+        function signOut() {
+            if (!selectedName) return;
+            const signatureCanvas = document.getElementById('signatureCanvas');
+            const signatureDataUrl = signatureCanvas.toDataURL();
+            signatures.signOut.push({ name: selectedName, signature: signatureDataUrl, time: currentTime });
+            clearSignature();
+            goToLandingPage(); // Automatically return to landing page
+        }
 
-function saveToLocalStorage(entry) {
-    const existing = JSON.parse(localStorage.getItem('signings')) || [];
-    existing.push(entry);
-    localStorage.setItem('signings', JSON.stringify(existing));
-}
         function clearSignature() {
             const canvas = document.getElementById('signatureCanvas');
             const ctx = canvas.getContext("2d");
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
 
-function generatePDF() {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
+       function generatePDF() {
+    const userPassword = prompt("Enter password to generate PDF:");
+    if (userPassword === password) {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
 
-    // Get the signature canvas and its context
-    const canvas = document.getElementById('signatureCanvas');
-    const signatureDataUrl = canvas.toDataURL('image/png'); // Get signature as image
+        // Add Sign In page
+        doc.text("Sign In", 10, 10);
+        signatures.signIn.forEach((entry, index) => {
+            const yPosition = 20 + (index * 60);
+            doc.text(`Name: ${entry.name}`, 10, yPosition);
+            doc.text(`Time: ${entry.time}`, 10, yPosition + 10);
+            doc.addImage(entry.signature, 'PNG', 10, yPosition + 20, 80, 40);
+        });
+        doc.addPage();
 
-           // Add Sign In page
-                doc.text("Sign In", 10, 10);
-                signatures.signIn.forEach((entry, index) => {
-                    const yPosition = 20 + (index * 60);
-                    doc.text(`Name: ${entry.name}`, 10, yPosition);
-                    doc.text(`Time: ${entry.time}`, 10, yPosition + 10);
-                    doc.addImage(entry.signature, 'PNG', 10, yPosition + 20, 80, 40);
-                });
-                doc.addPage();
+        // Add Sign Out page
+        doc.text("Sign Out", 10, 10);
+        signatures.signOut.forEach((entry, index) => {
+            const yPosition = 20 + (index * 60);
+            doc.text(`Name: ${entry.name}`, 10, yPosition);
+            doc.text(`Time: ${entry.time}`, 10, yPosition + 10);
+            doc.addImage(entry.signature, 'PNG', 10, yPosition + 20, 80, 40);
+        });
 
-                // Add Sign Out page
-                doc.text("Sign Out", 10, 10);
-                signatures.signOut.forEach((entry, index) => {
-                    const yPosition = 20 + (index * 60);
-                    doc.text(`Name: ${entry.name}`, 10, yPosition);
-                    doc.text(`Time: ${entry.time}`, 10, yPosition + 10);
-                    doc.addImage(entry.signature, 'PNG', 10, yPosition + 20, 80, 40);
-                });
-    // Create the PDF and save it in localStorage
-    const pdfData = doc.output('bloburl');
-    const savedPDFs = JSON.parse(localStorage.getItem('savedPDFs')) || [];
-    savedPDFs.push({
-        date: new Date(),
-        url: pdfData,
-        title: 'Signed PDF - ' + selectedName
-    });
+        // Convert the PDF to a data URL
+        const pdfDataUrl = doc.output('datauristring');
 
-    localStorage.setItem('savedPDFs', JSON.stringify(savedPDFs));
-    alert('PDF generated and saved.');
+        // Save the PDF URL in local storage
+        const savedPDFs = JSON.parse(localStorage.getItem('savedPDFs')) || [];
+        savedPDFs.push({
+            date: new Date(),
+            url: pdfDataUrl,
+            title: 'Signatures PDF'
+        });
+
+        localStorage.setItem('savedPDFs', JSON.stringify(savedPDFs));
+
+        // Optionally, prompt to download the PDF
+        doc.save('signatures.pdf');
+        goToLandingPage(); // Return to landing page after generating PDF
+    } else {
+        goToLandingPage(); // Return to landing page on incorrect password
+    }
 }
 
         initSignature();
     </script>
- <script>
-  // Example function to add a signing event to the calendar
-  function addSigningToCalendar(artistName, signingDate) {
-    const calendar = document.getElementById('calendar');
-    
-    // Create a new div to represent this signing
-    const signingDiv = document.createElement('div');
-    
-    // Set the event details in the div (can style it as you like)
-    signingDiv.innerHTML = `
-      <p><strong>${artistName}</strong> signed on <span>${signingDate}</span></p>
-      <a href="past_signings.html?artist=${encodeURIComponent(artistName)}&date=${encodeURIComponent(signingDate)}">View Details</a>
-    `;
-    
-    // Append this signing to the calendar div
-    calendar.appendChild(signingDiv);
-  }
-  
-  // Call this function whenever you want to add a new signing
-  // Example: addSigningToCalendar('Artist Name', '2025-04-01');
-</script>
- <div id="link-button-container">
+   <div id="link-button-container">
     <a href="past_signings.html">
-      <button class="button">Past Signings</button>
+      <button class="button">Back to Past Signings</button>
     </a>
   </div>
  <footer>
