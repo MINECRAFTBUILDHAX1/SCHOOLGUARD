@@ -1,136 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Past Signings</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            color: #333;
-            text-align: center;
-            margin: 0;
-            padding: 20px;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Past Signings</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      color: #333;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+    }
 
-        .button {
-            background-color: #ff0000;
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            font-size: 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin: 10px;
-        }
+    h1 {
+      margin-bottom: 10px;
+    }
 
-        .calendar {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            grid-gap: 5px;
-            max-width: 700px;
-            margin: 0 auto;
-        }
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+      max-width: 700px;
+      margin: 20px auto;
+    }
 
-        .calendar-day {
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
+    .calendar-day {
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
 
-        .calendar-day:hover {
-            background-color: #f1f1f1;
-        }
+    .calendar-day:hover {
+      background-color: #f1f1f1;
+    }
 
-        .pdf-viewer {
-            margin-top: 20px;
-            display: none;
-            max-width: 100%;
-            border: 1px solid #ddd;
-            padding: 10px;
-            background-color: #fff;
-        }
+    .calendar-day.today {
+      background-color: #ffe0e0;
+      font-weight: bold;
+    }
 
-        .pdf-viewer iframe {
-            width: 100%;
-            height: 500px;
-        }
+    .calendar-day.empty {
+      background: none;
+      cursor: default;
+    }
 
-    </style>
+    .pdf-viewer {
+      margin-top: 20px;
+      display: none;
+      max-width: 100%;
+      border: 1px solid #ddd;
+      padding: 10px;
+      background-color: #fff;
+    }
+
+    .pdf-viewer iframe {
+      width: 100%;
+      height: 500px;
+    }
+
+    @media (max-width: 600px) {
+      .calendar {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+  </style>
 </head>
 <body>
 
-    <h1>Past Signings</h1>
-    <div id="calendar-container" class="calendar"></div>
-    
-    <div id="pdf-viewer" class="pdf-viewer">
-        <h3>Signed PDF</h3>
-        <iframe id="pdf-frame" src="" frameborder="0"></iframe>
-    </div>
+  <h1 id="month-heading">Past Signings</h1>
+  <div id="calendar-container" class="calendar"></div>
 
-    <script>
-        // Calendar generation function
-        function generateCalendar() {
-            const calendarContainer = document.getElementById('calendar-container');
-            const currentDate = new Date();
-            const currentYear = currentDate.getFullYear();
-            const currentMonth = currentDate.getMonth();
+  <div id="pdf-viewer" class="pdf-viewer">
+    <h3 id="pdf-title">Signed PDF</h3>
+    <iframe id="pdf-frame" src="" frameborder="0"></iframe>
+  </div>
 
-            // Find first day of the month
-            const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
-            const firstDay = firstDayOfMonth.getDay();  // 0-6 (Sunday-Saturday)
+  <script>
+    function generateCalendar() {
+      const calendarContainer = document.getElementById('calendar-container');
+      const currentDate = new Date();
+      const currentYear = currentDate.getFullYear();
+      const currentMonth = currentDate.getMonth();
+      const monthNames = ["January", "February", "March", "April", "May", "June", 
+                          "July", "August", "September", "October", "November", "December"];
 
-            // Get the number of days in the current month
-            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+      document.getElementById('month-heading').innerText = `Past Signings - ${monthNames[currentMonth]} ${currentYear}`;
 
-            // Create the grid for the calendar
-            let calendarHtml = '';
-            let dayCounter = 1;
+      const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
+      const firstDay = firstDayOfMonth.getDay(); // 0 = Sunday
+      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
 
-            // Add empty days before the first day
-            for (let i = 0; i < firstDay; i++) {
-                calendarHtml += '<div class="calendar-day"></div>';
-            }
+      let calendarHtml = '';
+      let dayCounter = 1;
 
-            // Add days of the month
-            for (let i = firstDay; i < 7; i++) {
-                calendarHtml += `<div class="calendar-day" onclick="viewPDF(${dayCounter})">${dayCounter}</div>`;
-                dayCounter++;
-            }
+      // Empty cells before month starts
+      for (let i = 0; i < firstDay; i++) {
+        calendarHtml += `<div class="calendar-day empty"></div>`;
+      }
 
-            // Add remaining days
-            while (dayCounter <= daysInMonth) {
-                for (let i = 0; i < 7 && dayCounter <= daysInMonth; i++) {
-                    calendarHtml += `<div class="calendar-day" onclick="viewPDF(${dayCounter})">${dayCounter}</div>`;
-                    dayCounter++;
-                }
-            }
+      // Main days
+      const today = new Date().getDate();
+      for (let i = firstDay; i < 7; i++) {
+        const todayClass = (dayCounter === today) ? 'today' : '';
+        calendarHtml += `<div class="calendar-day ${todayClass}" onclick="viewPDF(${dayCounter})">${dayCounter}</div>`;
+        dayCounter++;
+      }
 
-            // Insert the calendar HTML
-            calendarContainer.innerHTML = calendarHtml;
+      while (dayCounter <= daysInMonth) {
+        for (let i = 0; i < 7 && dayCounter <= daysInMonth; i++) {
+          const todayClass = (dayCounter === today) ? 'today' : '';
+          calendarHtml += `<div class="calendar-day ${todayClass}" onclick="viewPDF(${dayCounter})">${dayCounter}</div>`;
+          dayCounter++;
         }
+      }
 
-        // Fetch and display the PDF for the selected day
-        function viewPDF(day) {
-            const savedPDFs = JSON.parse(localStorage.getItem('savedPDFs')) || [];
-            const selectedPDF = savedPDFs.find(pdf => new Date(pdf.date).getDate() === day);
+      calendarContainer.innerHTML = calendarHtml;
+    }
 
-            if (selectedPDF) {
-                const pdfViewer = document.getElementById('pdf-viewer');
-                const pdfFrame = document.getElementById('pdf-frame');
-                pdfViewer.style.display = 'block';
-                pdfFrame.src = selectedPDF.url;
-            } else {
-                alert('No PDF found for this date.');
-            }
-        }
+    function viewPDF(day) {
+      const savedPDFs = JSON.parse(localStorage.getItem('savedPDFs')) || [];
+      const today = new Date();
+      const currentYear = today.getFullYear();
+      const currentMonth = today.getMonth();
 
-        // Generate the calendar on page load
-        generateCalendar();
-    </script>
+      const selectedPDF = savedPDFs.find(pdf => {
+        const pdfDate = new Date(pdf.date);
+        return (
+          pdfDate.getDate() === day &&
+          pdfDate.getMonth() === currentMonth &&
+          pdfDate.getFullYear() === currentYear
+        );
+      });
+
+      if (selectedPDF) {
+        document.getElementById('pdf-viewer').style.display = 'block';
+        document.getElementById('pdf-frame').src = selectedPDF.url;
+        document.getElementById('pdf-title').innerText = selectedPDF.title || "Signed PDF";
+      } else {
+        alert('No PDF found for this date.');
+      }
+    }
+
+    generateCalendar();
+  </script>
 
 </body>
 </html>
