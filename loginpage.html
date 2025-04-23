@@ -3,50 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Login | SchoolGuard</title>
     <style>
-        /* Your styles here */
+        /* Define CSS Variables */
+        :root {
+            --primary-color: #2563eb; /* Majcherczyk Digital Primary Blue */
+            --secondary-color: #3b82f6; /* Lighter Blue for highlights */
+            --text-color: #1f2937; /* Dark Grey for text */
+            --bg-color: #ffffff; /* White background */
+            --card-bg: #f3f4f6; /* Light Grey for the form */
+            --transition: all 0.3s ease; /* Smooth transition */
+        }
+
+        /* Global Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: var(--bg-color); /* White background */
+            color: var(--text-color); /* Dark text color */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+            flex-direction: column;
+        }
+
+        h2 {
+            font-size: 2.5em;
+            color: var(--primary-color); /* Primary color */
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        form {
+            background-color: var(--card-bg); /* Light grey form background */
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+            width: 350px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center items horizontally */
+            justify-content: center; /* Center items vertically */
+        }
+
+        label {
+            font-size: 1.1em;
+            color: var(--text-color); /* Text color */
+            margin-bottom: 10px;
+            display: block;
+            text-align: center; /* Center text */
+            width: 100%; /* Ensure labels take up full width */
+        }
+
+        input {
+            width: 100%; /* Full width of the form */
+            padding: 12px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            margin-bottom: 20px;
+            background-color: var(--card-bg); /* Same light grey background */
+            color: var(--text-color);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color); /* Focus border color */
+        }
+
+        button {
+            background-color: var(--primary-color); /* Primary color for button */
+            color: white;
+            border: none;
+            padding: 15px 0;
+            font-size: 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            transition: var(--transition); /* Smooth transition */
+        }
+
+        button:hover {
+            background-color: var(--secondary-color); /* Secondary color on hover */
+            transform: scale(1.05);
+        }
+
+        .error-message {
+            color: red;
+            font-size: 1em;
+            margin-top: 10px;
+            display: none; /* Hidden by default */
+        }
+
+        footer {
+            position: absolute;
+            bottom: 10px;
+            font-size: 1em;
+            color: #888;
+            width: 100%;
+        }
+
+        footer a {
+            text-decoration: none;
+            color: var(--primary-color); /* Primary color for footer links */
+            font-weight: bold;
+        }
+
+        footer a:hover {
+            color: var(--secondary-color); /* Secondary color on hover */
+        }
     </style>
 </head>
 <body>
-    <form id="loginForm" style="text-align: center; padding: 20px; background-color: #fff; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); width: 300px; margin: 0 auto;">
-        <h2 style="font-size: 1.8em; color: #333; margin-bottom: 20px;">Login</h2>
-        
-        <label for="username" style="font-size: 1em; color: #333; margin-bottom: 10px; display: block;">Username:</label>
-        <input type="text" id="username" name="username" required 
-               style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; font-size: 16px; margin-bottom: 15px;">
-        
-        <label for="password" style="font-size: 1em; color: #333; margin-bottom: 10px; display: block;">Password:</label>
-        <input type="password" id="password" name="password" required
-               style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; font-size: 16px; margin-bottom: 15px;">
-        
-        <button type="submit" 
-                style="background-color: #ff0000; color: white; border: none; padding: 12px 20px; font-size: 16px; border-radius: 5px; cursor: pointer; width: 100%; transition: background-color 0.3s;">
-            Login
-        </button>
+    <h2>Welcome Back to SchoolGuard</h2>
+    <form id="loginForm">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required>
+
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required>
+
+        <button type="submit">Login</button>
+        <div id="errorMessage" class="error-message">Incorrect username or password. Please try again.</div>
     </form>
 
-    <!-- JavaScript -->
+    <footer>
+        <p>2025 <a href="https://www.markmajcherczykolczak.com" target="_blank">Majcherczyk Digital</a>. All rights reserved.</p>
+    </footer>
+
     <script>
         const logins = {
             "polishschoolealing": { password: "polishschoolealing", redirect: "polishschoolealing.html" },
             "schoolB": { password: "abcd", redirect: "schoolB.html" },
-            // Add more schools as needed
+            // add more schools as needed
         };
 
-        document.getElementById("loginForm").addEventListener("submit", function(event) {
+        document.getElementById("loginForm").addEventListener("submit", function (event) {
             event.preventDefault();
 
             const username = document.getElementById("username").value.trim();
             const password = document.getElementById("password").value.trim();
+            const errorMessage = document.getElementById("errorMessage");
+
+            // Hide error message initially
+            errorMessage.style.display = "none";
 
             if (logins[username] && logins[username].password === password) {
                 window.location.href = logins[username].redirect;
             } else {
-                alert("Invalid username or password ❌");
+                errorMessage.style.display = "block"; // Show error message
             }
         });
     </script>
 </body>
 </html>
-
