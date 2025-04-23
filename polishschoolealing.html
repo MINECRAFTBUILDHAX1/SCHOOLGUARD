@@ -306,23 +306,26 @@ footer p {
         }
 
         function signIn() {
-            if (!selectedName) return;
-            const signatureCanvas = document.getElementById('signatureCanvas');
-            const signatureDataUrl = signatureCanvas.toDataURL();
-            signatures.signIn.push({ name: selectedName, signature: signatureDataUrl, time: currentTime });
-            clearSignature();
-            goToLandingPage(); // Automatically return to landing page
-        }
+    const timestamp = new Date().toLocaleString();
+    const entry = { name: selectedName, time: timestamp, type: 'Sign In' };
+    signatures.signIn.push(entry);
+    saveToLocalStorage(entry);
+    alert(`${selectedName} signed in at ${timestamp}`);
+}
 
-        function signOut() {
-            if (!selectedName) return;
-            const signatureCanvas = document.getElementById('signatureCanvas');
-            const signatureDataUrl = signatureCanvas.toDataURL();
-            signatures.signOut.push({ name: selectedName, signature: signatureDataUrl, time: currentTime });
-            clearSignature();
-            goToLandingPage(); // Automatically return to landing page
-        }
+function signOut() {
+    const timestamp = new Date().toLocaleString();
+    const entry = { name: selectedName, time: timestamp, type: 'Sign Out' };
+    signatures.signOut.push(entry);
+    saveToLocalStorage(entry);
+    alert(`${selectedName} signed out at ${timestamp}`);
+}
 
+function saveToLocalStorage(entry) {
+    const existing = JSON.parse(localStorage.getItem('signings')) || [];
+    existing.push(entry);
+    localStorage.setItem('signings', JSON.stringify(existing));
+}
         function clearSignature() {
             const canvas = document.getElementById('signatureCanvas');
             const ctx = canvas.getContext("2d");
