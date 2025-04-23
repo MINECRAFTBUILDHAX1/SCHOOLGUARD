@@ -92,6 +92,24 @@ footer p {
   font-size: 0.9rem;
   opacity: 0.8;
 }
+         #link-button-container {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .button:hover {
+      background-color: #45a049;
+    }
 
     </style>
 </head>
@@ -375,7 +393,11 @@ function saveToLocalStorage(entry) {
   // Call this function whenever you want to add a new signing
   // Example: addSigningToCalendar('Artist Name', '2025-04-01');
 </script>
-
+ <div id="link-button-container">
+    <a href="past_signings.html">
+      <button class="button">Back to Past Signings</button>
+    </a>
+  </div>
  <footer>
   <p>2025 <a href="https://www.markmajcherczykolczak.com" target="_blank">Majcherczyk Digital</a>. All rights reserved.</p>
 </footer>
