@@ -67,12 +67,14 @@
         grid-template-columns: repeat(4, 1fr);
       }
     }
-     #link-button-container {
+
+    #link-button-container {
       position: fixed;
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
     }
+
     .button {
       padding: 10px 20px;
       font-size: 16px;
@@ -82,6 +84,7 @@
       cursor: pointer;
       border-radius: 5px;
     }
+
     .button:hover {
       background-color: #b30000;
     }
@@ -91,15 +94,21 @@
 
   <h1 id="month-heading">Past Signings</h1>
   <div id="calendar-container" class="calendar"></div>
+
   <!-- Simple button at the bottom of the page -->
   <div id="link-button-container">
     <a href="polishschoolealing.html">
       <button class="button">Go to Polish School Ealing</button>
     </a>
   </div>
+
   <div id="pdf-viewer" class="pdf-viewer">
     <h3 id="pdf-title">Signed PDF</h3>
     <iframe id="pdf-frame" src="" frameborder="0"></iframe>
+    <div id="pdf-navigation">
+      <button id="prev-pdf" onclick="changePDF(-1)">Previous</button>
+      <button id="next-pdf" onclick="changePDF(1)">Next</button>
+    </div>
   </div>
 
   <script>
@@ -144,29 +153,58 @@
       calendarContainer.innerHTML = calendarHtml;
     }
 
-   function viewPDF(day) {
-    const savedPDFs = JSON.parse(localStorage.getItem('savedPDFs')) || [];
-    const today = new Date();
-    const currentYear = today.getFullYear();
-    const currentMonth = today.getMonth();
+    let currentPDFIndex = 0; // to keep track of the current PDF for navigation
 
-    const selectedPDF = savedPDFs.find(pdf => {
+    function viewPDF(day) {
+      const savedPDFs = JSON.parse(localStorage.getItem('savedPDFs')) || [];
+      const today = new Date();
+      const currentYear = today.getFullYear();
+      const currentMonth = today.getMonth();
+
+      // Find PDFs for the selected date
+      const selectedPDFs = savedPDFs.filter(pdf => {
         const pdfDate = new Date(pdf.date);
         return (
-            pdfDate.getDate() === day &&
-            pdfDate.getMonth() === currentMonth &&
-            pdfDate.getFullYear() === currentYear
+          pdfDate.getDate() === day &&
+          pdfDate.getMonth() === currentMonth &&
+          pdfDate.getFullYear() === currentYear
         );
-    });
+      });
 
-    if (selectedPDF) {
+      if (selectedPDFs.length > 0) {
+        currentPDFIndex = 0; // Reset to the first PDF
+        displayPDF(selectedPDFs);
         document.getElementById('pdf-viewer').style.display = 'block';
-        document.getElementById('pdf-frame').src = selectedPDF.url;
-        document.getElementById('pdf-title').innerText = selectedPDF.title || "Signed PDF";
-    } else {
-        alert('No PDF found for this date.');
+      } else {
+        alert('No PDFs found for this date.');
+      }
     }
-}
+
+    function displayPDF(pdfs) {
+      const selectedPDF = pdfs[currentPDFIndex];
+      document.getElementById('pdf-frame').src = selectedPDF.url;
+      document.getElementById('pdf-title').innerText = selectedPDF.title || "Signed PDF";
+    }
+
+    function changePDF(direction) {
+      const savedPDFs = JSON.parse(localStorage.getItem('savedPDFs')) || [];
+      const today = new Date();
+      const currentYear = today.getFullYear();
+      const currentMonth = today.getMonth();
+
+      // Find PDFs for the selected date again
+      const selectedPDFs = savedPDFs.filter(pdf => {
+        const pdfDate = new Date(pdf.date);
+        return (
+          pdfDate.getMonth() === currentMonth &&
+          pdfDate.getFullYear() === currentYear
+        );
+      });
+
+      // Update the current index with direction (1 for next, -1 for previous)
+      currentPDFIndex = (currentPDFIndex + direction + selectedPDFs.length) % selectedPDFs.length;
+      displayPDF(selectedPDFs);
+    }
 
     generateCalendar();
   </script>
