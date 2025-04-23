@@ -67,13 +67,36 @@
         grid-template-columns: repeat(4, 1fr);
       }
     }
+     #link-button-container {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .button:hover {
+      background-color: #45a049;
+    }
   </style>
 </head>
 <body>
 
   <h1 id="month-heading">Past Signings</h1>
   <div id="calendar-container" class="calendar"></div>
-
+  <!-- Simple button at the bottom of the page -->
+  <div id="link-button-container">
+    <a href="polishschoolealing.html">
+      <button class="button">Go to Polish School Ealing</button>
+    </a>
+  </div>
   <div id="pdf-viewer" class="pdf-viewer">
     <h3 id="pdf-title">Signed PDF</h3>
     <iframe id="pdf-frame" src="" frameborder="0"></iframe>
