@@ -99,7 +99,7 @@
   </div>
   <div id="pdf-viewer" class="pdf-viewer">
     <h3 id="pdf-title">Signed PDF</h3>
-    <iframe id="pdf-frame" src="" frameborder="0"></iframe>
+    <div id="pdf-links"></div> <!-- Container for multiple PDFs -->
   </div>
 
   <script>
@@ -144,29 +144,38 @@
       calendarContainer.innerHTML = calendarHtml;
     }
 
-   function viewPDF(day) {
-    const savedPDFs = JSON.parse(localStorage.getItem('savedPDFs')) || [];
-    const today = new Date();
-    const currentYear = today.getFullYear();
-    const currentMonth = today.getMonth();
+    function viewPDF(day) {
+      const savedPDFs = JSON.parse(localStorage.getItem('savedPDFs')) || [];
+      const today = new Date();
+      const currentYear = today.getFullYear();
+      const currentMonth = today.getMonth();
 
-    const selectedPDF = savedPDFs.find(pdf => {
-        const pdfDate = new Date(pdf.date);
-        return (
-            pdfDate.getDate() === day &&
-            pdfDate.getMonth() === currentMonth &&
-            pdfDate.getFullYear() === currentYear
-        );
-    });
+      const selectedPDFs = savedPDFs.filter(pdf => {
+          const pdfDate = new Date(pdf.date);
+          return (
+              pdfDate.getDate() === day &&
+              pdfDate.getMonth() === currentMonth &&
+              pdfDate.getFullYear() === currentYear
+          );
+      });
 
-    if (selectedPDF) {
-        document.getElementById('pdf-viewer').style.display = 'block';
-        document.getElementById('pdf-frame').src = selectedPDF.url;
-        document.getElementById('pdf-title').innerText = selectedPDF.title || "Signed PDF";
-    } else {
-        alert('No PDF found for this date.');
+      const pdfLinksContainer = document.getElementById('pdf-links');
+      pdfLinksContainer.innerHTML = ''; // Clear any existing links
+
+      if (selectedPDFs.length > 0) {
+          document.getElementById('pdf-viewer').style.display = 'block';
+          selectedPDFs.forEach(pdf => {
+              const linkElement = document.createElement('a');
+              linkElement.href = pdf.url;
+              linkElement.target = '_blank';
+              linkElement.innerText = pdf.title || 'Signed PDF';
+              linkElement.style.display = 'block';
+              pdfLinksContainer.appendChild(linkElement);
+          });
+      } else {
+          alert('No PDFs found for this date.');
+      }
     }
-}
 
     generateCalendar();
   </script>
