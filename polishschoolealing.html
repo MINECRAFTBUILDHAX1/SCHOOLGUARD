@@ -341,10 +341,18 @@ function saveToLocalStorage(entry) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
 
-       function generatePDF() {
+function generatePDF() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
 
+    // Get the signature canvas and its context
+    const canvas = document.getElementById('signatureCanvas');
+    const signatureDataUrl = canvas.toDataURL('image/png'); // Get signature as image
+
+    // Add the signature image to the PDF
+    doc.addImage(signatureDataUrl, 'PNG', 10, 30, 180, 50); // Adjust the position and size of the signature
+
+    // Add name and time
     doc.text('Signed by: ' + selectedName, 10, 10);
     doc.text('Time: ' + currentTime, 10, 20);
 
