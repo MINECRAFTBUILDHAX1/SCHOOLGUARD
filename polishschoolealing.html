@@ -316,6 +316,8 @@ footer p {
     signatures.signIn.push(entry);
     saveToLocalStorage(entry);
     alert(`${selectedName} signed in at ${timestamp}`);
+      document.getElementById('signature-page').classList.add('hidden');
+    document.getElementById('landing-page').classList.remove('hidden');
 }
 
 function signOut() {
@@ -324,6 +326,8 @@ function signOut() {
     signatures.signOut.push(entry);
     saveToLocalStorage(entry);
     alert(`${selectedName} signed out at ${timestamp}`);
+     document.getElementById('signature-page').classList.add('hidden');
+    document.getElementById('landing-page').classList.remove('hidden');
 }
 
 function saveToLocalStorage(entry) {
