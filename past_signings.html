@@ -156,29 +156,28 @@
     let currentPDFIndex = 0; // to keep track of the current PDF for navigation
 
     function viewPDF(day) {
-      const savedPDFs = JSON.parse(localStorage.getItem('savedPDFs')) || [];
-      const today = new Date();
-      const currentYear = today.getFullYear();
-      const currentMonth = today.getMonth();
+  const savedPDFs = JSON.parse(localStorage.getItem('savedPDFs')) || [];
+  const today = new Date();
+  const currentYear = today.getFullYear();
+  const currentMonth = today.getMonth();
 
-      // Find PDFs for the selected date
-      const selectedPDFs = savedPDFs.filter(pdf => {
-        const pdfDate = new Date(pdf.date);
-        return (
-          pdfDate.getDate() === day &&
-          pdfDate.getMonth() === currentMonth &&
-          pdfDate.getFullYear() === currentYear
-        );
-      });
+  // Construct the selected date (without time) and get the current date and time in the format 'YYYY-MM-DD'
+  const selectedDate = new Date(currentYear, currentMonth, day);
+  const selectedDateString = selectedDate.toISOString().split('T')[0]; // Get 'YYYY-MM-DD'
 
-      if (selectedPDFs.length > 0) {
-        currentPDFIndex = 0; // Reset to the first PDF
-        displayPDF(selectedPDFs);
-        document.getElementById('pdf-viewer').style.display = 'block';
-      } else {
-        alert('No PDFs found for this date.');
-      }
-    }
+  // Find PDFs for the selected date
+  const selectedPDFs = savedPDFs.filter(pdf => pdf.datetime.startsWith(selectedDateString));
+
+  if (selectedPDFs.length > 0) {
+    const selectedPDF = selectedPDFs[0]; // Assuming you're showing only the first matching PDF
+    document.getElementById('pdf-viewer').style.display = 'block';
+    document.getElementById('pdf-title').innerText = `Signed PDF - ${selectedPDF.datetime}`;
+    // You can display a message, show a placeholder, or add further logic here
+  } else {
+    alert('No PDFs found for this date.');
+  }
+}
+
 
     function displayPDF(pdfs) {
       const selectedPDF = pdfs[currentPDFIndex];
