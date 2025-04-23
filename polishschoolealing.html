@@ -349,13 +349,24 @@ function generatePDF() {
     const canvas = document.getElementById('signatureCanvas');
     const signatureDataUrl = canvas.toDataURL('image/png'); // Get signature as image
 
-    // Add the signature image to the PDF
-    doc.addImage(signatureDataUrl, 'PNG', 10, 30, 180, 50); // Adjust the position and size of the signature
+           // Add Sign In page
+                doc.text("Sign In", 10, 10);
+                signatures.signIn.forEach((entry, index) => {
+                    const yPosition = 20 + (index * 60);
+                    doc.text(`Name: ${entry.name}`, 10, yPosition);
+                    doc.text(`Time: ${entry.time}`, 10, yPosition + 10);
+                    doc.addImage(entry.signature, 'PNG', 10, yPosition + 20, 80, 40);
+                });
+                doc.addPage();
 
-    // Add name and time
-    doc.text('Signed by: ' + selectedName, 10, 10);
-    doc.text('Time: ' + currentTime, 10, 20);
-
+                // Add Sign Out page
+                doc.text("Sign Out", 10, 10);
+                signatures.signOut.forEach((entry, index) => {
+                    const yPosition = 20 + (index * 60);
+                    doc.text(`Name: ${entry.name}`, 10, yPosition);
+                    doc.text(`Time: ${entry.time}`, 10, yPosition + 10);
+                    doc.addImage(entry.signature, 'PNG', 10, yPosition + 20, 80, 40);
+                });
     // Create the PDF and save it in localStorage
     const pdfData = doc.output('bloburl');
     const savedPDFs = JSON.parse(localStorage.getItem('savedPDFs')) || [];
